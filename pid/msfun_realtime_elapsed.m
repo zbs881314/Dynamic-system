@@ -1,9 +1,4 @@
 function msfun_realtime_elapsed(block)
-% Help for Writing Level-2 M-File S-Functions:
-%   web([docroot '/toolbox/simulink/sfg/f7-67622.html']
-%   http://www.mathworks.com/access/helpdesk/help/toolbox/simulink/sfg/f7-67622.html
-
-% Copyright 2009, The MathWorks, Inc.
 
 % instance variables 
 myRealTimeBaseline = 0;
