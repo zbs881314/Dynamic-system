@@ -1,0 +1,78 @@
+! Homework problem from Process Dynamics and Control
+! by Seborg, Edgar, Mellichamp, Doyle, Edition 3
+! Problem 19.15
+Model
+  Parameters
+    Fa = 150   ! Flow of A (L/hr)
+    Caf = 0.3  ! Feed Concentration of A (mol A/L)
+    Cbf = 0.3  ! Feed Concentration of B (mol B/L)
+    V = 200    ! Volume of reactor (L)
+
+    ! T and Fb are the degrees of freedom to maximize Cb
+    T =300, >=300, <=500  ! Reactor temperature (K)
+    Fb =0, >=0, <=200  ! Flow of B (L/hr) with constraints (0 < Fb < 200)
+  End Parameters
+
+  Variables
+    Ca = Caf   ! Concentration of A in reactor (mol A/L)
+    Cb = 0     ! Concentration of B in reactor (mol B/L)
+    F = Fa     ! Total flow out of reactor (L/hr)
+
+    Outlet_B
+    Inlet_B
+    Production_B1
+    Production_B2
+  End Variables
+
+  Intermediates
+    ! Kinetic rate constant (1/hr)
+    k1 = 3.0e6 * exp(-5000/T)
+    k2 = 6.0e6 * exp(-5500/T)
+  End Intermediates
+
+  Equations
+    ! overall material balance, assuming constant densities of A, B, and diluant
+    F = Fa + Fb
+
+    ! overall species balance for A  
+    V * $Ca = Fa * Caf - F*Ca - k1*Ca*V + k2*Cb*V
+
+    ! overall species balance for B  
+    V * $Cb = Fb * Cbf - F*Cb + k1*Ca*V - k2*Cb*V
+
+    ! total B entering the reactor
+    Inlet_B = Cbf * Fb
+
+    ! total B leaving the reactor
+    Outlet_B = Cb * F
+
+    ! total production of B (computed using two different methods)
+    Production_B1 = Outlet_B - Inlet_B
+    Production_B2 = k1*Ca*V - k2*Cb*V
+
+    ! objective function
+    ! maximize total amount of B leaving the reactor
+    maximize F * Cb
+
+    ! maximize steady-state production
+    !maximize Production_B1
+
+    ! maximize instantaneous production
+    !maximize Production_B2
+  End Equations
+End Model
+
+File *.plt
+ New Trend
+  Production_B1
+  Production_B2
+ New Trend
+  Inlet_B
+  Outlet_B
+ New Trend
+  T
+  Fb
+  Production_B1
+  Production_B2
+  Outlet_B
+End File
