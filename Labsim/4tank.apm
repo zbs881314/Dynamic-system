@@ -1,0 +1,54 @@
+! Four tank process
+! Edited by Trevor Slade for use in APMonitor Controller inside a Simulink simulation 
+
+Model
+  Constants
+   C1 = .0035
+   C2 = .1544
+   V1Max = 500
+   V2Max = 500
+   
+  End Constants
+
+  Parameters
+  
+    ! fractional split to tank 1 vs. tank 4
+    gamma[1] = 0.5, >=0, <=1        ! manually controlled variable
+
+    ! fractional split to tank 2 vs. tank 3
+    gamma[2] = 0.5, >=0, <=1         ! manually controlled variable 
+
+    ! Flow from pump A
+    v1 = .5, >=0.01, <=1      ! cm/s          ! Control Output
+
+    ! Flow from pump B
+    v2 = .5, >=0.01, <=1      ! cm/s         ! Control Output
+  End Parameters
+  
+  Variables
+    ! tank height: diameter = 15.24 cm,  max height = 45.72 cm
+    h[1] = 1e-5 , >=0
+    h[2] = 1e-5 , >=0
+    h[3] = 1e-5 , >=0
+    h[4] = 1e-5 , >=0
+  End Variables
+
+  Intermediates
+    ! Velocity
+    Vol1 = v1*V1Max
+	Vol2 = v2*V2Max
+
+    ! outlet flows
+    out[1:4] = C2 * sqrt(h[1:4])       ! converted to cm/s   dh/dt
+
+    ! total inlet flows
+    in[1] = C1*Vol2*(1-gamma[2])             ! converted to cm/s   dh/dt
+    in[2] = C1*Vol1*(1-gamma[1])             ! converted to cm/s   dh/dt
+    in[3] = C1*Vol1*gamma[1] + out[1]        ! converted to cm/s   dh/dt
+    in[4] = C1*Vol2*gamma[2] + out[2]        ! converted to cm/s   dh/dt
+  End Intermediates
+
+  Equations
+   $h[1:4] = in[1:4] - out[1:4] 
+  End Equations
+End Model
